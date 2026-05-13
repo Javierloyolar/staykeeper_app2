@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between mb-4">
+    <h2>Resumen de Propiedades</h2>
+    <form method="get" class="d-flex gap-2">
+        <select name="listing" class="form-select" onchange="this.form.submit()">
+            <option value="">Todas</option>
+            {% for p in properties %}
+            <option value="{{ p.id }}" {% if selected.id == p.id %}selected{% endif %}>{{ p.name }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card p-3">
+            <span class="text-muted">Ingresos Totales (Neto)</span>
+            <h2 class="text-success">${{ total_net }}</h2>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="card p-3">
+            <h5>Calendario Próximo (iCal)</h5>
+            <ul class="list-group list-group-flush">
+                {% for e in upcoming %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <span><strong>{{ e.start }}</strong> - {{ e.prop }}</span>
+                    <span class="badge bg-primary">{{ e.name }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

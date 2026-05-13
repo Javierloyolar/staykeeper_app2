@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4 card p-4">
+        <h4 class="text-center mb-4">Ingreso Staykeeper</h4>
+        
+        {% if form.errors %}
+            <div class="alert alert-danger" style="font-size: 0.9rem;">
+                Email o contraseña incorrectos.
+            </div>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <div class="alert alert-danger" style="font-size: 0.9rem;">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary w-100" style="background:#0E4C63">Entrar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
