@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'guests',
     'bookings',
     'dashboard',
+    'ical_sync', 
 ]
 
 MIDDLEWARE = [

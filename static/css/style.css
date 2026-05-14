@@ -1,0 +1,45 @@
+/* static/css/style.css */
+
+/* Efecto Achurado para fechas pasadas en Reservas Programadas */
+.day-pasado-achurado {
+    background-color: #f8f9fa;
+    background-image: linear-gradient(45deg, #dee2e6 25%, transparent 25%, transparent 50%, #dee2e6 50%, #dee2e6 75%, transparent 75%, transparent);
+    background-size: 8px 8px;
+    opacity: 0.6;
+    color: #adb5bd;
+    pointer-events: none;
+    /* Evita interacción en el pasado */
+}
+
+
+
+/* Estilo para el día de hoy */
+.day-hoy {
+    border: 2px solid #0E4C63 !important;
+    /* Tu color corporativo #0E4C63 */
+    font-weight: bold;
+}
+
+/* Etiquetas de eventos */
+.event-label {
+    font-size: 0.7rem;
+    padding: 2px 4px;
+    border-radius: 3px;
+    margin-top: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Diferenciación por modo */
+.day-ocupado-realizadas {
+    background-color: #e3f2fd;
+    /* Azul clarito para tus reservas */
+    border-left: 4px solid #0E4C63;
+}
+
+.day-ocupado-programadas {
+    background-color: #fff5f5;
+    /* Tono rojizo suave (estilo Airbnb) */
+    border-left: 4px solid #ff5a5f;
+}
