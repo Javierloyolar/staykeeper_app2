@@ -10,7 +10,7 @@ class BookingAdmin(admin.ModelAdmin):
         'check_in', 
         'net_revenue', 
         'owner_payout', 
-        'staykeeper_revenue'
+        'staykeeper_revenue',
     )
     list_filter = ('listing', 'platform', 'check_in') # Solo dejamos campos que SI existen
     search_fields = ('reservation_code', 'guest__full_name')

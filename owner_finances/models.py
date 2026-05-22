@@ -35,8 +35,10 @@ class OwnerFinancialTransaction(models.Model):
     created_at       = models.DateTimeField(auto_now_add=True)
 
     @property
-    def owner_share(self): # monto que afecta al cliente propietario, considerando tipo, impacto y comisión
-        
+    def owner_share(self):
+        if not self.amount or not self.transaction_type or not self.owner_impact:
+            return 0
+
         factor = -1 if self.transaction_type == 'expense' else 1
         monto_con_signo = self.amount * factor
 
@@ -45,15 +47,22 @@ class OwnerFinancialTransaction(models.Model):
         if self.owner_impact == 'full_admin':
             return 0
         if self.owner_impact == 'mixed':
+            if not self.listing_id or not self.listing.commission_rate:
+                return 0
             return int(monto_con_signo * (1 - self.listing.commission_rate))
         return 0
 
-    @property # monto que afecta al administrador (comisión)
+   
+
+
+    @property
     def admin_share(self):
+        if not self.amount or not self.transaction_type:
+            return 0
         factor = -1 if self.transaction_type == 'expense' else 1
         monto_con_signo = self.amount * factor
         return monto_con_signo - self.owner_share
-
+    
     def save(self, *args, **kwargs):
         # Inmutabilidad: una vez guardada no se puede modificar
         if self.pk:
@@ -103,6 +112,17 @@ class OwnerPayout(models.Model):
     def property_charges_total(self):
        # Manual: Los gastos de propiedad ya retornan como valores negativos en owner_share
         return sum(t.owner_share for t in self.property_charges.all())
+    
+    def clean(self):
+        invalidas = self.property_charges.filter(booking__isnull=False)
+        if invalidas.exists():
+            codigos = ", ".join(
+                t.booking.reservation_code for t in invalidas
+            )
+            raise ValidationError(
+                f"Solo se pueden incluir transacciones sin reserva asociada. "
+                f"Las siguientes tienen reserva: {codigos}"
+            )
     
     @property
     def net_amount(self):
