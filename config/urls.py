@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views # Importamos las vistas de auth
 from users.forms import EmailAuthenticationForm # Importamos tu nuevo formulario
+from dashboard.views import DashboardIndexView, DetalleFinancieroView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +27,7 @@ urlpatterns = [
     ), name='login'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('', include('dashboard.urls')),   
+    path('dashboard/', DashboardIndexView.as_view(), name='dashboard_index'),
+    
+    path('dashboard/detalle-ingresos/', DetalleFinancieroView.as_view(), name='detalle_financiero'),
 ]

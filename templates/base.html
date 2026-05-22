@@ -28,6 +28,16 @@
             .col-md-2 { width: 100%; }
         }
     </style>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <script>
+        // Opcional: Para manejar errores de carga de forma elegante
+        document.body.addEventListener('htmx:beforeSwap', function(evt) {
+            if(evt.detail.xhr.status === 404){
+                alert("No se encontró la sección solicitada.");
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="container-fluid">

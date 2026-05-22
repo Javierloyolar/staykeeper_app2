@@ -37,12 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'users',
     'properties',
     'guests',
     'bookings',
     'dashboard',
     'ical_sync', 
+    'owner_finances',
 ]
 
 MIDDLEWARE = [
@@ -137,3 +139,4 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGIN_REDIRECT_URL = 'dashboard:index'
 LOGOUT_REDIRECT_URL = 'login'
+
