@@ -194,55 +194,96 @@ function mostrarSeccion(seccion) {
 </script>
 
 <div class="mt-3 px-1">
-
     <h4 class="fw-bold mb-3" style="color: #0E4C63; font-size: 1.1rem;">
         {% if modo == 'realizadas' %} Historial de Estadías {% else %} Próximos Arribos {% endif %}
     </h4>
 
     <div class="table-responsive">
-        <table class="table table-sm align-middle custom-owner-table">
+        <table class="table table-sm align-middle">
+            {% if modo == 'realizadas' %}
+            <thead>
+                <tr style="font-size: 0.7rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px;">
+                    <th class="py-2">Huésped</th>
+                    <th class="text-center py-2">Noches</th>
+                    <th class="text-end py-2">Base</th>
+                    <th class="text-end py-2">Extras</th>
+                    <th class="text-end py-2">Total</th>
+                    <th class="text-center py-2">Estado</th>
+                </tr>
+            </thead>
+            {% endif %}
             <tbody>
                 {% for b in fuente_datos %}
-                    <tr>
-                        <td>
-                            <div class="fw-bold text-dark table-guest-name">
-                                {% if modo == 'realizadas' %}
-                                    {{ b.guest.full_name|default:"Huésped" }}
-                                {% else %}
-                                    {# En programadas usas iCal, puedes adaptarlo a su campo descriptivo #}
-                                    {{ b.summary|default:"Airbnb" }}
-                                    
-                                {% endif %}
-                            </div>
-                            <div class="text-muted table-dates" style="font-size: 0.72rem;">
-                                {{ b.check_in|date:"d M" }} - {{ b.check_out|date:"d M" }}
-                                {% if b.noches_en_mes %}
-                                    <span class="text-nowrap">({{ b.noches_en_mes }} noches)</span>
-                                {% endif %}
-                            </div>
-                        </td>
-                        
-                        <td class="text-end fw-bold table-income">
+                <tr>
+                    <td>
+                        <div class="fw-bold text-dark table-guest-name">
                             {% if modo == 'realizadas' %}
-                                ${{ b.pago_prorrateado|clp }}
+                                {{ b.guest.full_name|default:"Huésped" }}
                             {% else %}
-                                <span class="badge bg-light text-dark border">Confirmada</span>
+                                {{ b.summary|default:"Airbnb" }}
+                            {% endif %}
+                        </div>
+                        <div class="text-muted table-dates" style="font-size: 0.72rem;">
+                            {{ b.check_in|date:"d M" }} - {{ b.check_out|date:"d M" }}
+                            {% if b.noches_en_mes %}
+                                <span class="text-nowrap">({{ b.noches_en_mes }} noches)</span>
+                            {% endif %}
+                        </div>
+                    </td>
+
+                    {% if modo == 'realizadas' %}
+                        <td class="text-center">{{ b.noches_en_mes }}</td>
+
+                        <td class="text-end">${{ b.pago_prorrateado|clp }}</td>
+
+                        <td class="text-end">
+                            {% if b.extras_total is not None %}
+                                {% if b.extras_total >= 0 %}
+                                    <span class="text-success" style="font-size:0.8rem;">+${{ b.extras_total|clp }}</span>
+                                {% else %}
+                                    <span class="text-danger" style="font-size:0.8rem;">-${{ b.extras_total|clp|cut:"-" }}</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">—</span>
                             {% endif %}
                         </td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="2" class="text-center text-muted py-4 style-empty">
-                            No hay registros para este mes.
+
+                        <td class="text-end fw-bold">${{ b.total_fila|clp }}</td>
+
+                        <td class="text-center">
+                            {% if b.estado_pago == 'paid' %}
+                                <span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:bold">
+                                    ✓ Pagado{% if b.fecha_pago %} {{ b.fecha_pago|date:"d M" }}{% endif %}
+                                </span>
+                            {% else %}
+                                <span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:bold">
+                                    ⏳ Pendiente
+                                </span>
+                            {% endif %}
                         </td>
-                    </tr>
+
+                    {% else %}
+                        <td class="text-end fw-bold table-income">
+                            <span class="badge bg-light text-dark border">Confirmada</span>
+                        </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        No hay registros para este mes.
+                    </td>
+                </tr>
                 {% endfor %}
-                
+
                 {% if modo == 'realizadas' and kpi_ingresos > 0 %}
-                    <tr class="table-total-row">
-                        <td class="fw-bold text-start text-uppercase" style="font-size: 0.85rem;">Total Mes</td>
-                        <td class="fw-bold text-end text-nowrap" style="font-size: 0.85rem;">${{ kpi_ingresos|clp }}</td>
-                    </tr>
+                <tr style="border-top: 2px solid #dee2e6;">
+                    <td class="fw-bold text-uppercase" colspan="4" style="font-size:0.85rem;">Total Mes</td>
+                    <td class="text-end fw-bold" style="font-size:0.95rem; color:#0E4C63;">
+                        ${{ kpi_ingresos|clp }}
+                    </td>
+                    <td></td>
+                </tr>
                 {% endif %}
             </tbody>
         </table>

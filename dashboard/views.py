@@ -4,6 +4,7 @@ from bookings.models import Booking
 from ical_sync.models import IcalBlock 
 import calendar
 from datetime import date, timedelta
+from owner_finances.models import OwnerFinancialTransaction
 
 # --- HELPER DE MÉTRICAS ---
 def obtener_metricas_hub(user, year, month):
@@ -88,7 +89,7 @@ class DashboardIndexView(LoginRequiredMixin, ListView):
                 listing__owner=self.request.user,
                 check_out__gt=date(year, month, 1),
                 check_in__lte=date(year, month, num_dias)
-            ).select_related('guest')
+            ).select_related('guest','payout')
 
             # Prorrateamos los montos para cada reserva individual dentro de fuente_datos
             inicio_mes = date(year, month, 1)
@@ -100,7 +101,21 @@ class DashboardIndexView(LoginRequiredMixin, ListView):
                 
                 total_noches_reserva = (b.check_out - b.check_in).days
                 pago_diario = b.owner_payout / total_noches_reserva if total_noches_reserva > 0 else 0
-                b.pago_prorrateado = pago_diario * b.noches_en_mes
+                b.pago_prorrateado = int(pago_diario * b.noches_en_mes)
+                # Extras
+                txs = b.owner_transactions.all()
+                b.extras_total = sum(t.owner_share for t in txs) if txs.exists() else None
+
+                # Total fila
+                b.total_fila = b.pago_prorrateado + (b.extras_total or 0)
+
+                # Estado de pago
+                try:
+                    b.estado_pago = b.payout.status
+                    b.fecha_pago = b.payout.paid_date
+                except:
+                    b.estado_pago = 'pending'
+                    b.fecha_pago = None
 
         else:
             fuente_datos = IcalBlock.objects.filter(
@@ -171,7 +186,8 @@ class DetalleFinancieroView(LoginRequiredMixin, ListView):
             listing__owner=self.request.user,
             check_out__gt=inicio,
             check_in__lte=fin
-        ).select_related('listing', 'guest')
+        ).select_related('listing', 'guest', 'payout')
+        
 
         for b in queryset:
             # Tu lógica de prorrateo (que está perfecta)
@@ -180,13 +196,42 @@ class DetalleFinancieroView(LoginRequiredMixin, ListView):
             total_noches = (b.check_out - b.check_in).days
             pago_diario = b.owner_payout / total_noches if total_noches > 0 else 0
             b.noches_en_mes = noches_mes
-            b.pago_prorrateado = pago_diario * noches_mes
+            b.pago_prorrateado = int(pago_diario * noches_mes)
             
+            # Extras: suma owner_share de todas las transacciones de esta reserva
+            txs = b.owner_transactions.all()
+            b.extras_total = sum(t.owner_share for t in txs) if txs.exists() else None
+            
+            # Total fila
+            b.total_fila = b.pago_prorrateado + (b.extras_total or 0)
+
+            # Estado de pago
+            try:
+                b.estado_pago = b.payout.status  # 'pending' o 'paid'
+                b.fecha_pago = b.payout.paid_date
+            except:
+                b.estado_pago = 'pending'
+                b.fecha_pago = None
         return queryset
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Pasamos mes y año para que el botón "Volver" sepa qué mes recargar
-        context['month'] = self.request.GET.get('month')
-        context['year'] = self.request.GET.get('year')
+        month = int(self.request.GET.get('month', date.today().month))
+        year = int(self.request.GET.get('year', date.today().year))
+        context['month'] = month
+        context['year'] = year
+         # Gastos de propiedad acordados para este mes (sin reserva, incluidos en algún payout)
+        gastos_propiedad = OwnerFinancialTransaction.objects.filter(
+            listing__owner=self.request.user,
+            booking__isnull=True,
+            included_in_payouts__booking__listing__owner=self.request.user,
+            included_in_payouts__booking__check_out__year=year,
+            included_in_payouts__booking__check_out__month=month,
+        ).distinct()
+
+        context['gastos_propiedad'] = gastos_propiedad
+        context['gastos_propiedad_total'] = sum(t.owner_share for t in gastos_propiedad)
+        reservas = context['reservas']
+        context['total_mes'] = sum(b.total_fila for b in reservas) - context['gastos_propiedad_total']
         return context
+        
