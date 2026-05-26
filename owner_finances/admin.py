@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils import timezone
 from .models import OwnerFinancialTransaction, OwnerPayout
 
 
@@ -14,9 +15,11 @@ class OwnerFinancialTransactionAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', 'owner_share', 'admin_share')
 
     def get_type_badge(self, obj):
+        if not obj.transaction_type:
+            return "—"
         if obj.transaction_type == 'income':
-            return format_html('<span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:bold">▲ Ingreso</span>')
-        return format_html('<span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:bold">▼ Egreso</span>')
+            return format_html('<span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:bold">{}</span>', '▲ Ingreso')
+        return format_html('<span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:bold">{}</span>', '▼ Egreso')
     get_type_badge.short_description = 'Tipo'
 
     def formatted_amount(self, obj):
@@ -30,6 +33,23 @@ class OwnerFinancialTransactionAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'booking':
+            from bookings.models import Booking
+            from django.forms import ModelChoiceField
+
+            class BookingChoiceField(ModelChoiceField):
+                def label_from_instance(self, obj):
+                    nombre = obj.guest.full_name if obj.guest else 'Sin huésped'
+                    return f"{nombre} — {obj.check_in.strftime('%d %b')} / {obj.check_out.strftime('%d %b %Y')}"
+
+            kwargs['form_class'] = BookingChoiceField
+            kwargs['queryset'] = Booking.objects.select_related('guest').all()
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    class Media:
+        js = ('owner_finances/admin_transaction.js',)
 
 
 # ─── INLINE para property_charges ───
@@ -53,7 +73,7 @@ class PropertyChargesInline(admin.TabularInline):
 @admin.register(OwnerPayout)
 class OwnerPayoutAdmin(admin.ModelAdmin):
 
-    list_display    = ('id', 'get_reservation_code', 'base_amount', 'get_total_extras', 'get_net_amount', 'get_status_badge', 'scheduled_date', 'paid_date')
+    list_display    = ('id', 'get_listing', 'get_reservation_code', 'base_amount', 'get_total_extras', 'get_net_amount', 'get_status_badge', 'scheduled_date', 'paid_date')
     list_filter     = ('status', 'scheduled_date', 'booking__listing')
     search_fields   = ('booking__reservation_code', 'notes')
     readonly_fields = ('base_amount', 'get_net_amount', 'get_total_extras', 'get_property_charges_total')
@@ -61,7 +81,7 @@ class OwnerPayoutAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Reserva', {
-            'fields': ('booking',)
+            'fields': ('booking',)  
         }),
         ('Montos', {
             'fields': ('base_amount', 'get_total_extras', 'get_property_charges_total', 'get_net_amount'),
@@ -71,6 +91,10 @@ class OwnerPayoutAdmin(admin.ModelAdmin):
             'fields': ('status', 'scheduled_date', 'paid_date', 'payment_method', 'notes')
         }),
     )
+
+    def get_listing(self, obj):
+        return obj.booking.listing.name if obj.booking else "—"
+    get_listing.short_description = 'Propiedad'
 
     def get_reservation_code(self, obj):
         return obj.booking.reservation_code if obj.booking else "Sin Reserva"
@@ -100,8 +124,24 @@ class OwnerPayoutAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if obj and obj.status == 'paid':
-            return [f.name for f in obj._meta.fields] + ['get_net_amount', 'get_total_extras', 'get_property_charges_total']
+            return [f.name for f in obj._meta.fields] + ['get_listing', 'get_net_amount', 'get_total_extras', 'get_property_charges_total']
         return self.readonly_fields
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'booking':
+            from bookings.models import Booking
+            from django.forms import ModelChoiceField
+
+            class BookingChoiceField(ModelChoiceField):
+                def label_from_instance(self, obj):
+                    nombre = obj.guest.full_name if obj.guest else 'Sin huésped'
+                    return f"{obj.listing.name} — {nombre} ({obj.check_in.strftime('%d %b')} / {obj.check_out.strftime('%d %b %Y')})"
+
+            kwargs['form_class'] = BookingChoiceField
+            kwargs['queryset'] = Booking.objects.select_related('guest', 'listing').filter(
+                payout__isnull=True
+            )
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     actions = ['marcar_como_pagado']
 

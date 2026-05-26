@@ -11,10 +11,11 @@ class OwnerFinancialTransaction(models.Model):
     CATEGORY_CHOICES = [
         ('late_checkout',      'Late Checkout'),
         ('early_checkin',      'Early Check-in'),
+        ('additional_night',   'Noche Adicional'),
         ('repair',             'Reparación'),
         ('supply',             'Insumos'),
         ('guest_compensation', 'Compensación Huésped'),
-        ('utilities',          'Servicios'),
+        ('cleaning',           'Aseo'),
         ('maintenance',        'Mantención'),
         ('other',              'Otro'),
     ]
@@ -69,6 +70,16 @@ class OwnerFinancialTransaction(models.Model):
             raise ValidationError(
                 "Las transacciones no pueden modificarse. Para corregir, crea una transacción compensatoria con el tipo u impacto inverso."
             )
+        
+            # Forzar comportamiento para late_checkout y early_checkin
+        if self.category in ('late_checkout', 'early_checkin', 'additional_night'):
+            self.transaction_type = 'income'
+            self.owner_impact = 'mixed'
+        
+        if self.category == 'cleaning':
+            self.transaction_type = 'income'
+            self.owner_impact = 'full_owner'
+            
         super().save(*args, **kwargs)
 
     def __str__(self):

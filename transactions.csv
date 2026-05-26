@@ -1,0 +1,34 @@
+reservation_code,amount,transaction_date,category,transaction_type,owner_impact,description
+HM2FW5BP85,30000,2026-01-19,cleaning,income,full_owner,Aseo Dani
+HMRHM2RYCZ,30000,2026-01-25,cleaning,income,full_owner,Aseo Dani
+HMRKQC3RJ5,30000,2026-02-01,cleaning,income,full_owner,Aseo Dani
+HM8SZHK89M,30000,2026-02-05,cleaning,income,full_owner,Aseo Dani
+HMHQ83FWXZ,25000,2026-02-07,cleaning,income,full_owner,Aseo Dani
+HMF5YSDRER,25000,2026-02-08,cleaning,income,full_owner,Aseo Dani
+HM8TRMCKMD,30000,2026-02-11,cleaning,income,full_owner,Aseo Dani
+HM29E3HNDM,25000,2026-02-12,cleaning,income,full_owner,Aseo Dani
+HM5QANHTMW,30000,2026-02-19,cleaning,income,full_owner,Aseo Dani
+HMZXR35DCP,25000,2026-02-20,cleaning,income,full_owner,Aseo Dani
+HMYFPZ3TRS,25000,2026-02-22,cleaning,income,full_owner,Aseo Dani
+HMMWN8Y5M8,30000,2026-02-26,cleaning,income,full_owner,Aseo Dani
+HMSZPWSEEQ,25000,2026-02-27,cleaning,income,full_owner,Aseo Dani
+HMC3NFH4EY,25000,2026-03-01,cleaning,income,full_owner,Aseo Dani
+HM2NTEPFZ5,30000,2026-03-06,cleaning,income,full_owner,Aseo Dani
+HM5CXPDQDC,25000,2026-03-08,cleaning,income,full_owner,Aseo Dani
+HMM5DZK9DA,30000,2026-03-12,cleaning,income,full_owner,Aseo Dani
+HMQS4H83QH,25000,2026-03-15,cleaning,income,full_owner,Aseo Dani
+HM82SXWJFK,30000,2026-03-22,cleaning,income,full_owner,Aseo Dani
+HMX9RQ8TXP,30000,2026-03-27,cleaning,income,full_owner,Aseo Dani
+HMSSJT9BKY,25000,2026-03-29,cleaning,income,full_owner,Aseo Dani
+HMDPEWKCNX,25000,2026-04-03,cleaning,income,full_owner,Aseo Dani
+HM9JHPARJY,25000,2026-04-05,cleaning,income,full_owner,Aseo Dani
+HM9HPF25KR,30000,2026-04-12,cleaning,income,full_owner,Aseo Dani
+HMPH5FCEY3,30000,2026-04-21,cleaning,income,full_owner,Aseo Dani
+HMW3ZD9PA9,30000,2026-04-26,cleaning,income,full_owner,Aseo Dani
+HMQZ9NCEWY,25000,2026-05-01,cleaning,income,full_owner,Aseo Dani
+HMPKDMPESN,25000,2026-05-03,cleaning,income,full_owner,Aseo Dani
+HMHMRE5H4R,25000,2026-05-08,cleaning,income,full_owner,Aseo Dani
+HM2Q5RXF2F,25000,2026-05-10,cleaning,income,full_owner,Aseo Dani
+HMH22CFQEA,25000,2026-05-14,cleaning,income,full_owner,Aseo Dani
+HMQ24TZTMJ,25000,2026-05-17,cleaning,income,full_owner,Aseo Dani
+HMH22CFQEA,15000,2026-05-14,late_checkout,income,mixed,late check out

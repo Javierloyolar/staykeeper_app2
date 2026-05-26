@@ -17,13 +17,12 @@ from guests.models import Guest
 def cargar_datos():
     # --- GUESTS ---
     print("Cargando Huéspedes...")
-    with open('guests.csv', encoding='utf-8') as f:
+    with open('guests2.csv', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
             Guest.objects.get_or_create(
-                id=row['id'],
+                full_name=row['full_name'],
                 defaults={
-                    'full_name': row['full_name'], 
                     'email': row['email']
                 }
             )
@@ -46,7 +45,7 @@ def cargar_datos():
 
     # --- BOOKINGS ---
     print("Cargando Reservas y calculando StayKeeper metrics...")
-    with open('bookings.csv', encoding='utf-8') as f:
+    with open('bookings2.csv', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
             # Usamos get_or_create para no chocar con reservas ya cargadas
