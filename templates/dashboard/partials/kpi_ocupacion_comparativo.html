@@ -1,0 +1,39 @@
+<div id="kpi-ocupacion-comparativo-container">
+    <div class="card border-0 shadow-sm p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold text-dark mb-0">Ocupación histórica</h6>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light border dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        data-bs-auto-close="outside">
+                    Años
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end p-2" style="min-width: 160px;">
+                    {% for anio in anios_con_datos %}
+                    <li>
+                        <label class="dropdown-item d-flex align-items-center gap-2" style="cursor:pointer;">
+                            <input type="checkbox"
+                                   class="anio-check-ocupacion"
+                                   value="{{ anio }}"
+                                   {% if forloop.last %}checked{% endif %}>
+                            {{ anio }}
+                        </label>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <div style="height: 260px; position: relative; width: 100%;">
+            <canvas id="grafico-ocupacion-comparativo"
+                    style="display: block;"
+                    data-comparativo='{{ comparativo_ocupacion_json }}'>
+            </canvas>
+        </div>
+
+        <!-- Totales anuales -->
+        <div class="d-flex justify-content-center gap-4 mt-4" id="totales-ocupacion">
+        </div>
+    </div>
+</div>

@@ -1,0 +1,94 @@
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold text-dark mb-0">Ocupación</h5>
+        <button class="btn btn-staykeeper btn-sm px-3"
+                hx-get="/?modo=realizadas"
+                hx-target="#main-content">
+            <i class="bi bi-arrow-left me-1"></i> Volver
+        </button>
+    </div>
+
+    <div class="card border-0 shadow-sm p-4"
+         data-meses='{{ todos_los_meses_json }}'
+         data-mes-actual='{{ mes_actual }}'
+         data-anio='{{ anio_actual }}'
+         id="card-ocupacion-mes">
+
+        <!-- Selector dentro del card -->
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <button class="btn btn-sm btn-light border px-2 py-1" id="btn-mes-anterior">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <span class="fw-semibold" id="label-mes" style="color:#0E4C63; font-size:1rem;"></span>
+            <button class="btn btn-sm btn-light border px-2 py-1" id="btn-mes-siguiente">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+
+        <div class="row g-4 align-items-center">
+
+            <!-- Gauge principal — mitad izquierda -->
+            <div class="col-md-6">
+                <div style="max-width:280px; margin:0 auto; display:grid;">
+                    <canvas id="gauge-ocupacion" style="display:block; grid-area:1/1;"></canvas>
+                    <div style="grid-area:1/1; align-self:end; text-align:center; padding-bottom:20%;">
+                        <div class="fw-bold" id="label-pct-ocupacion" style="font-size:2rem; color:#0E4C63; line-height:1.1;"></div>
+                        <div class="text-muted" style="font-size:0.72rem;">Ocupación del mes</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mitad derecha -->
+            <div class="col-md-6">
+
+                <!-- 3 mini cards stats -->
+                <!-- 3 mini cards stats -->
+                <div class="row g-2 mb-4">
+                    <div class="col-4">
+                        <div class="rounded-3 p-2 text-center" style="background:#f8fafc; border: 1px solid rgba(14,76,99,0.1);">
+                            <div class="fw-bold" id="stat-reservadas" style="font-size:1.3rem; color:#0E4C63;"></div>
+                            <div class="text-muted" style="font-size:0.68rem;">Reservadas</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="rounded-3 p-2 text-center" style="background:#f8fafc; border: 1px solid rgba(107,114,128,0.15);">
+                            <div class="fw-bold" id="stat-bloqueadas" style="font-size:1.3rem; color:#6b7280;"></div>
+                            <div class="text-muted" style="font-size:0.68rem;">Bloqueadas</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="rounded-3 p-2 text-center" style="background:#f8fafc; border: 1px solid rgba(107,114,128,0.15);">
+                            <div class="fw-bold" id="stat-sinreserva" style="font-size:1.3rem; color:#9ca3af;"></div>
+                            <div class="text-muted" style="font-size:0.68rem;">Sin reserva</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mini gauges -->
+                <div class="row g-4">
+                    <div class="col-6 text-center">
+                        <div style="max-width:110px; margin:0 auto; display:grid;">
+                            <canvas id="gauge-fds" style="display:block; grid-area:1/1;"></canvas>
+                            <div style="grid-area:1/1; align-self:end; text-align:center; padding-bottom:5%;">
+                                <div class="fw-bold" id="label-fds" style="font-size:1rem; color:#0E4C63; line-height:1;"></div>
+                                <div class="text-muted mt-1" style="font-size:0.72rem;">Fin de semana</div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="col-6 text-center">
+                        <div style="max-width:110px; margin:0 auto; display:grid;">
+                            <canvas id="gauge-semana" style="display:block; grid-area:1/1;"></canvas>
+                            <div style="grid-area:1/1; align-self:end; text-align:center; padding-bottom:5%;">
+                                <div class="fw-bold" id="label-semana" style="font-size:1rem; color:#0E4C63; line-height:1;"></div>
+                                <div class="text-muted mt-1" style="font-size:0.72rem;">Días de semana</div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

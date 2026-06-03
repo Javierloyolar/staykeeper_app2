@@ -1,0 +1,46 @@
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h5 class="fw-bold text-dark mb-1">Ingresos Netos</h5>
+            <div class="d-flex align-items-center gap-3 mt-1">
+                <button class="btn btn-sm btn-light border px-2 py-1" id="btn-año-anterior">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <span class="fw-semibold" id="label-año" style="color:#0E4C63; font-size:1rem;"></span>
+                <button class="btn btn-sm btn-light border px-2 py-1" id="btn-año-siguiente">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        <button class="btn btn-staykeeper btn-sm px-3"
+                hx-get="/?modo=realizadas"
+                hx-target="#main-content">
+            <i class="bi bi-arrow-left me-1"></i> Volver
+        </button>
+    </div>
+
+    <div class="card border-0 shadow-sm p-4">
+        <div id="grafico-ingresos-wrapper" style="height: 260px; position: relative; width: 100%;">
+            <canvas id="grafico-ingresos" style="display: block;"
+                    data-todos='{{ todos_los_años_json }}'
+                    data-año-actual='{{ año_actual }}'>
+            </canvas>           
+        </div>
+
+        <!-- Mostrar total de cad año -->
+        <div class="d-flex justify-content-center mt-4">
+            <div class="px-4 py-2 rounded-3 text-center" style="background: rgba(14, 76, 99, 0.06);">
+                <div class="text-muted mb-1" style="font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase;">
+                    Total <span id="label-año-total"></span>
+                </div>
+                <div class="fw-bold" id="total-año" style="font-size: 1.3rem; color:#0E4C63;"></div>
+            </div>
+        </div>
+
+        <div id="grafico-ingresos-vacio" class="text-center py-5 text-muted d-none">
+            <i class="bi bi-bar-chart" style="font-size: 2rem;"></i>
+            <h5 class="mt-3">Sin datos registrados</h5>
+            <p>No existen ingresos para este año.</p>
+        </div>
+    </div>
+</div>
