@@ -79,33 +79,29 @@
                 <!-- SEGUNDA PARTE: Los días reales del mes -->
                 {% for d in dias_mes %}
                     <div class="day-card 
-                        {% if d.registro %}
+                        {% if d.es_pasado %}
+                            day-pasado-achurado
+                        {% elif d.registro %}
                             {% if modo == 'realizadas' %}
-                                {# En esta pestaña, todo lo que aparece es una reserva pagada #}
-                                status-reserva
+                                {% if d.es_dia_unico %}status-reserva
+                                {% elif d.es_inicio_reserva %}status-reserva-inicio
+                                {% elif d.es_fin_reserva %}status-reserva-fin
+                                {% else %}status-reserva-medio{% endif %}
                             {% else %}
-                                {# En pestaña Programadas, distinguimos entre reserva de Airbnb o bloqueo manual #}
                                 {% if d.registro.is_reservation %}
-                                    status-reserva
-                                {% else %}
-                                    status-bloqueado
-                                {% endif %}
+                                    {% if d.es_dia_unico %}status-reserva
+                                    {% elif d.es_inicio_reserva %}status-reserva-inicio
+                                    {% elif d.es_fin_reserva %}status-reserva-fin
+                                    {% else %}status-reserva-medio{% endif %}
+                                {% else %}status-bloqueado{% endif %}
                             {% endif %}
                         {% endif %}
-                        {% if d.es_hoy %}es-hoy{% endif %} 
-                        {% if d.es_pasado %}day-pasado-achurado{% endif %}">
+                        {% if d.es_hoy %}es-hoy{% endif %}">
                         
                         <span class="day-number">{{ d.dia }}</span>
-
+                        <!-- Identificador toma el nombre del huesped solo en historial -->
                         {% if d.identificador %}
-                            <!-- Si estamos en Realizadas muestra Nombre, si es Programadas muestra Check-in -->
-                            <span class="guest-name">
-                                {% if modo == 'programadas' %}
-                                    <span class="badge-checkin-ical">{{ d.identificador }}</span>
-                                {% else %}
-                                    {{ d.identificador|truncatechars:12 }}
-                                {% endif %}
-                            </span>
+                            <span class="guest-name">{{ d.identificador|truncatechars:12 }}</span>
                         {% endif %}
                     </div>
                 {% endfor %}
@@ -160,9 +156,7 @@
                         </div>
                         <div class="text-muted" style="font-size:0.72rem;">
                             {{ b.check_in|date:"d M" }} - {{ b.check_out|date:"d M" }}
-                            {% if b.noches_en_mes %}
-                                <span class="text-nowrap">({{ b.noches_en_mes }} noches)</span>
-                            {% endif %}
+                            
                         </div>
                     </td>
 

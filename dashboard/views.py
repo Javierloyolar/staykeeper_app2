@@ -60,8 +60,7 @@ class DashboardIndexView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         hoy = date.today()
-        modo = self.request.GET.get('modo', 'programadas')
-        
+
         raw_month = self.request.GET.get('month', '')
         raw_year = self.request.GET.get('year', '')
 
@@ -70,105 +69,188 @@ class DashboardIndexView(LoginRequiredMixin, ListView):
         else:
             month, year = hoy.month, hoy.year
 
-        # Lógica de Muro
-        es_mes_actual = (year == hoy.year and month == hoy.month)
-        bloquear_atras = (modo == 'programadas' and es_mes_actual)
-        bloquear_adelante = (modo == 'realizadas' and es_mes_actual)
-
-        # Si el usuario "salta" el muro por URL, lo devolvemos
-        if modo == 'programadas' and (year < hoy.year or (year == hoy.year and month < hoy.month)):
-            month, year, es_mes_actual, bloquear_atras = hoy.month, hoy.year, True, True
-        elif modo == 'realizadas' and (year > hoy.year or (year == hoy.year and month > hoy.month)):
-            month, year, es_mes_actual, bloquear_adelante = hoy.month, hoy.year, True, True
-
-        # Fechas navegación
+        # Fechas navegación — sin restricciones de modo
         fecha_actual_view = date(year, month, 1)
         prev_month_date = fecha_actual_view - timedelta(days=1)
         next_month_date = (fecha_actual_view + timedelta(days=32)).replace(day=1)
+        # Para que el Dashboard solo muestre hasta un mes hacia adelante
+        mes_max = (hoy.replace(day=1) + timedelta(days=32)).replace(day=1)
+        es_mes_maximo = next_month_date > mes_max
 
-        # Carga de datos
+        # --- Calendario fusionado (Booking + IcalBlock) ---
         primer_dia_semana, num_dias = calendar.monthrange(year, month)
-        if modo == 'realizadas':
-            fuente_datos = Booking.objects.filter(
-                listing__owner=self.request.user,
-                check_out__gt=date(year, month, 1),
-                check_in__lte=date(year, month, num_dias)
-            ).select_related('guest','payout')
+        total_celdas = primer_dia_semana + num_dias
+        celdas_faltantes = 42 - total_celdas if total_celdas < 42 else 0
+        inicio_mes = date(year, month, 1)
+        fin_mes = date(year, month, num_dias)
 
-            # Prorrateamos los montos para cada reserva individual dentro de fuente_datos
-            inicio_mes = date(year, month, 1)
-            fin_mes = date(year, month, num_dias)
-            for b in fuente_datos:
-                c_in = max(b.check_in, inicio_mes)
-                c_out = min(b.check_out, fin_mes + timedelta(days=1))
-                b.noches_en_mes = (c_out - c_in).days
-                
-                total_noches_reserva = (b.check_out - b.check_in).days
-                pago_diario = b.owner_payout / total_noches_reserva if total_noches_reserva > 0 else 0
-                b.pago_prorrateado = int(pago_diario * b.noches_en_mes)
-                # Extras
-                txs = b.owner_transactions.all()
-                b.extras_total = sum(t.owner_share for t in txs) if txs.exists() else None
+        reservas = Booking.objects.filter(
+            listing__owner=self.request.user,
+            check_out__gt=inicio_mes,
+            check_in__lte=fin_mes
+        )
 
-                # Total fila
-                b.total_fila = b.pago_prorrateado + (b.extras_total or 0)
+        
+        # IcalBlock completo — reservas y bloqueos
+        ical_eventos = IcalBlock.objects.filter(
+            listing__owner=self.request.user,
+            check_out__gt=inicio_mes,
+            check_in__lte=fin_mes,
+        )
 
-                # Estado de pago
-                try:
-                    b.estado_pago = b.payout.status
-                    b.fecha_pago = b.payout.paid_date
-                except:
-                    b.estado_pago = 'pending'
-                    b.fecha_pago = None
-
-        else:
-            fuente_datos = IcalBlock.objects.filter(
-                listing__owner=self.request.user,
-                check_out__gt=date(year, month, 1),
-                check_in__lte=date(year, month, num_dias)
-            )
-
-        # Construcción de la grilla
         dias_mes = []
         for dia in range(1, num_dias + 1):
             fecha_iter = date(year, month, dia)
-            registro = fuente_datos.filter(check_in__lte=fecha_iter, check_out__gt=fecha_iter).first()
-            
-            identificador = None
-            if registro:
-                if modo == 'realizadas':
-                    identificador = registro.guest.full_name if registro.guest else "Huésped"
-                elif registro.check_in == fecha_iter and registro.is_reservation:
-                    identificador = "Check-in"
+
+            # Prioridad 1: Booking real
+            reserva = reservas.filter(
+                check_in__lte=fecha_iter,
+                check_out__gt=fecha_iter
+            ).first()
+
+            es_reserva = False
+            es_bloqueo = False
+            es_inicio_reserva = False
+            es_fin_reserva = False
+            es_dia_unico = False
+            registro = None
+
+            if reserva:
+                es_reserva = True
+                registro = reserva
+            else:
+                # Prioridad 2: IcalBlock
+                ical = ical_eventos.filter(
+                    check_in__lte=fecha_iter,
+                    check_out__gt=fecha_iter
+                ).first()
+                if ical:
+                    if ical.is_reservation:
+                        es_reserva = True
+                        registro = ical
+                    else:
+                        es_bloqueo = True
+                        registro = ical
+
+            if registro and es_reserva:
+                es_inicio_reserva = fecha_iter == registro.check_in
+                es_fin_reserva = fecha_iter == (registro.check_out - timedelta(days=1))
+                es_dia_unico = es_inicio_reserva and es_fin_reserva
 
             dias_mes.append({
                 'dia': dia,
-                'fecha': fecha_iter,
-                'registro': registro,
-                'identificador': identificador,
+                'es_reserva': es_reserva,
+                'es_bloqueo': es_bloqueo,
+                'es_inicio_reserva': es_inicio_reserva,
+                'es_fin_reserva': es_fin_reserva,
+                'es_dia_unico': es_dia_unico,
                 'es_hoy': fecha_iter == hoy,
-                'es_pasado': (fecha_iter < hoy and modo == 'programadas'),
             })
         
-        # Corrección del parámetro stats
+        # --- Stats del mes para el dashboard ---
+        noches_reservadas_dash = sum(1 for d in dias_mes if d['es_reserva'])
+        noches_bloqueadas_dash = sum(1 for d in dias_mes if d['es_bloqueo'])
+        noches_sin_reserva_dash = num_dias - noches_reservadas_dash - noches_bloqueadas_dash
+
+        # --- KPIs ---
         stats = obtener_metricas_hub(self.request.user, year, month)
+
+        # --- Próximos movimientos (15 días hacia adelante) ---
+        limite = hoy + timedelta(days=15)
+
+        proximos_checkins = list(Booking.objects.filter(
+            listing__owner=self.request.user,
+            check_in__gte=hoy,
+            check_in__lte=limite,
+        ).order_by('check_in')[:4])
+
+        proximos_checkouts = list(Booking.objects.filter(
+            listing__owner=self.request.user,
+            check_out__gte=hoy,
+            check_out__lte=limite,
+        ).order_by('check_out')[:4])
+
+        # iCal sin Booking correspondiente — checkins
+        proximos_ical_checkin = []
+        for b in IcalBlock.objects.filter(
+            listing__owner=self.request.user,
+            check_in__gte=hoy,
+            check_in__lte=limite,
+            is_reservation=True,
+        ).order_by('check_in')[:8]:
+            ya_tiene_booking = Booking.objects.filter(
+                listing__owner=self.request.user,
+                check_in=b.check_in,
+            ).exists()
+            if not ya_tiene_booking:
+                proximos_ical_checkin.append(b)
+            if len(proximos_ical_checkin) >= 4:
+                break
+
+        # iCal sin Booking correspondiente — checkouts
+        proximos_ical_checkout = []
+        for b in IcalBlock.objects.filter(
+            listing__owner=self.request.user,
+            check_out__gte=hoy,
+            check_out__lte=limite,
+            is_reservation=True,
+        ).order_by('check_out')[:8]:
+            ya_tiene_booking = Booking.objects.filter(
+                listing__owner=self.request.user,
+                check_out=b.check_out,
+            ).exists()
+            if not ya_tiene_booking:
+                proximos_ical_checkout.append(b)
+            if len(proximos_ical_checkout) >= 4:
+                break
+
+        proximos_movimientos = sorted(
+            [{'tipo': 'checkin', 'fecha': b.check_in, 'booking': b, 'dias': (b.check_in - hoy).days} for b in proximos_checkins] +
+            [{'tipo': 'checkout', 'fecha': b.check_out, 'booking': b, 'dias': (b.check_out - hoy).days} for b in proximos_checkouts] +
+            [{'tipo': 'checkin', 'fecha': b.check_in, 'booking': b, 'dias': (b.check_in - hoy).days} for b in proximos_ical_checkin] +
+            [{'tipo': 'checkout', 'fecha': b.check_out, 'booking': b, 'dias': (b.check_out - hoy).days} for b in proximos_ical_checkout],
+            key=lambda x: x['fecha']
+        )[:4]
+
+        # --- Ventana móvil de ingresos ---
+        ingresos_ventana = []
+        for i in range(-3, 3):
+            m = month + i
+            y = year
+            while m < 1:
+                m += 12
+                y -= 1
+            while m > 12:
+                m -= 12
+                y += 1
+            stats_ventana = obtener_metricas_hub(self.request.user, y, m)
+            ingresos_ventana.append({
+                'label': f"{MESES_ES[m-1][:3]} {y}",
+                'ingresos': round(stats_ventana['ingresos']),
+                'es_actual': (m == month and y == year),
+            })
 
         context.update({
             'month': month,
             'year': year,
             'hoy': hoy,
             'dias_mes': dias_mes,
-            'fuente_datos': fuente_datos,
             'espacios_inicio': range(primer_dia_semana),
+            'celdas_faltantes': range(celdas_faltantes),
             'nombre_mes': f"{MESES_ES[month-1]} {year}",
             'prev_month': prev_month_date,
             'next_month': next_month_date,
-            'modo': modo,
-            'bloquear_atras': bloquear_atras,
-            'bloquear_adelante': bloquear_adelante,
+            'es_mes_maximo': es_mes_maximo,
             'kpi_ingresos': stats['ingresos'],
             'kpi_ocupacion': stats['ocupacion'],
             'kpi_calificacion': 5.0,
+            'proximos_movimientos': proximos_movimientos,
+            'ingresos_ventana_json': json.dumps([d['ingresos'] for d in ingresos_ventana]),
+            'ingresos_ventana_labels_json': json.dumps([d['label'] for d in ingresos_ventana]),
+            'ingresos_ventana_actual_idx': next(i for i, d in enumerate(ingresos_ventana) if d['es_actual']),
+            'noches_reservadas_dash': noches_reservadas_dash,
+            'noches_bloqueadas_dash': noches_bloqueadas_dash,
+            'noches_sin_reserva_dash': noches_sin_reserva_dash,
         })
         return context
 
@@ -409,19 +491,32 @@ class EstadiaView(LoginRequiredMixin, ListView):
             fecha_iter = date(year, month, dia)
             registro = fuente_datos.filter(check_in__lte=fecha_iter, check_out__gt=fecha_iter).first()
             identificador = None
-            if registro:
-                if modo == 'realizadas':
-                    identificador = registro.guest.full_name if registro.guest else "Huésped"
-                elif registro.check_in == fecha_iter and registro.is_reservation:
-                    identificador = "Check-in"
+            es_inicio_reserva = False
+            es_fin_reserva = False
+            es_medio_reserva = False
+            es_dia_unico = False
 
+            if registro:
+                es_inicio_reserva = fecha_iter == registro.check_in
+                es_fin_reserva = fecha_iter == (registro.check_out - timedelta(days=1))
+                es_dia_unico = es_inicio_reserva and es_fin_reserva
+                es_medio_reserva = not es_inicio_reserva and not es_fin_reserva
+
+                if modo == 'realizadas':
+                    if es_inicio_reserva:
+                        identificador = registro.guest.full_name if registro.guest else "Huésped"
+                
             dias_mes.append({
                 'dia': dia,
                 'fecha': fecha_iter,
                 'registro': registro,
                 'identificador': identificador,
+                'es_inicio_reserva': es_inicio_reserva,
+                'es_fin_reserva': es_fin_reserva,
+                'es_medio_reserva': es_medio_reserva,
+                'es_dia_unico': es_dia_unico,
                 'es_hoy': fecha_iter == hoy,
-                'es_pasado': (fecha_iter < hoy and modo == 'programadas'),
+                'es_pasado': (fecha_iter < hoy and modo == 'programadas'),                
             })
 
         stats = obtener_metricas_hub(self.request.user, year, month)

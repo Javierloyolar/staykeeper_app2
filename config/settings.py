@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'dashboard',
     'ical_sync', 
     'owner_finances',
+    'landing',
 ]
 
 MIDDLEWARE = [
@@ -138,5 +139,5 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGIN_REDIRECT_URL = 'dashboard:index'
-LOGOUT_REDIRECT_URL = 'login'
+LOGOUT_REDIRECT_URL = '/'
 

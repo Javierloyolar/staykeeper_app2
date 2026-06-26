@@ -43,3 +43,24 @@
     /* Tono rojizo suave (estilo Airbnb) */
     border-left: 4px solid #ff5a5f;
 }
+
+/* Scroll sin scrollbar visible */
+.proximos-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* Fade inferior para indicar más contenido */
+.proximos-scroll-wrapper {
+    position: relative;
+}
+
+.proximos-scroll-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(to bottom, transparent, white);
+    pointer-events: none;
+}

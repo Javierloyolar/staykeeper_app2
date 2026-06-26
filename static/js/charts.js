@@ -1,6 +1,61 @@
 
 const MESES_ES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
+
+const COLORES_COMPARATIVO = [
+    'rgba(14, 76, 99, 1.0)',
+    'rgba(5, 150, 105, 1.0)',
+    'rgba(217, 119, 6, 1.0)',
+    'rgba(139, 92, 246, 1.0)',
+];
+
+function renderGauge(canvasId, valor) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const inst = Chart.getChart(canvas);
+    if (inst) inst.destroy();
+
+    const gradientPlugin = {
+        id: 'gaugeGradient',
+        afterLayout(chart) {
+            const { ctx, chartArea } = chart;
+            if (!chartArea) return;
+            const gradient = ctx.createLinearGradient(
+                chartArea.left, chartArea.bottom,
+                chartArea.right, chartArea.top
+            );
+            gradient.addColorStop(0, 'rgba(14, 76, 99, 0.4)');
+            gradient.addColorStop(1, 'rgba(14, 76, 99, 1.0)');
+            chart.data.datasets[0].backgroundColor[0] = gradient;
+        }
+    };
+
+    const chart = new Chart(canvas, {
+        type: 'doughnut',
+        plugins: [gradientPlugin],
+        data: {
+            datasets: [{
+                data: [0, 100],
+                backgroundColor: ['#0E4C63', '#e9ecef'],
+                borderWidth: 0,
+                circumference: 180,
+                rotation: 270,
+            }]
+        },
+        options: {
+            animation: { duration: 800, easing: 'easeOutCubic' },
+            responsive: true,
+            maintainAspectRatio: true,
+            cutout: '78%',
+            events: [],
+            plugins: { legend: { display: false }, tooltip: { enabled: false } }
+        }
+    });
+
+    chart.data.datasets[0].data = [valor, 100 - valor];
+    chart.update();
+}
+
 function renderIngresosChart() {
     const canvas = document.getElementById('grafico-ingresos');
     if (!canvas) return;
@@ -125,14 +180,6 @@ function renderIngresosChart() {
 }
 
 
-
-const COLORES_COMPARATIVO = [
-    'rgba(14, 76, 99, 1.0)',
-    'rgba(5, 150, 105, 1.0)',
-    'rgba(217, 119, 6, 1.0)',
-    'rgba(139, 92, 246, 1.0)',
-];
-
 function renderComparativoChart() {
     const canvas = document.getElementById('grafico-comparativo');
     if (!canvas) return;
@@ -220,54 +267,6 @@ function renderComparativoChart() {
     });
 }
 
-function renderGaugeVelocimetro(canvasId, valor) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
-
-    const inst = Chart.getChart(canvas);
-    if (inst) inst.destroy();
-
-    const ctx = canvas.getContext('2d');
-    const cx = canvas.width / 2;
-    const cy = canvas.height * 0.75;
-    const radio = Math.min(canvas.width, canvas.height) * 0.42;
-
-    // Fondo gris
-    ctx.beginPath();
-    ctx.arc(cx, cy, radio, Math.PI, 2 * Math.PI);
-    ctx.strokeStyle = '#e9ecef';
-    ctx.lineWidth = radio * 0.18;
-    ctx.stroke();
-
-    // Arco coloreado según valor
-    const color = valor < 40 ? '#ef4444' : valor < 70 ? '#f59e0b' : '#0E4C63';
-    const angulo = Math.PI + (valor / 100) * Math.PI;
-    ctx.beginPath();
-    ctx.arc(cx, cy, radio, Math.PI, angulo);
-    ctx.strokeStyle = color;
-    ctx.lineWidth = radio * 0.18;
-    ctx.stroke();
-
-    // Aguja
-    const anguloAguja = Math.PI + (valor / 100) * Math.PI;
-    const largoAguja = radio * 0.75;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(
-        cx + largoAguja * Math.cos(anguloAguja),
-        cy + largoAguja * Math.sin(anguloAguja)
-    );
-    ctx.strokeStyle = '#374151';
-    ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-    ctx.stroke();
-
-    // Centro
-    ctx.beginPath();
-    ctx.arc(cx, cy, radio * 0.08, 0, 2 * Math.PI);
-    ctx.fillStyle = '#374151';
-    ctx.fill();
-}
 
 function renderOcupacionChart() {
     const card = document.getElementById('card-ocupacion-mes');
@@ -279,52 +278,6 @@ function renderOcupacionChart() {
         'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     let indiceActual = 0;
 
-    function renderGauge(canvasId, valor) {
-        const canvas = document.getElementById(canvasId);
-        if (!canvas) return;
-        const inst = Chart.getChart(canvas);
-        if (inst) inst.destroy();
-
-        const gradientPlugin = {
-            id: 'gaugeGradient',
-            afterLayout(chart) {
-                const { ctx, chartArea } = chart;
-                if (!chartArea) return;
-                const gradient = ctx.createLinearGradient(
-                    chartArea.left, chartArea.bottom,
-                    chartArea.right, chartArea.top
-                );
-                gradient.addColorStop(0, 'rgba(14, 76, 99, 0.4)');
-                gradient.addColorStop(1, 'rgba(14, 76, 99, 1.0)');
-                chart.data.datasets[0].backgroundColor[0] = gradient;
-            }
-        };
-
-        const chart = new Chart(canvas, {
-            type: 'doughnut',
-            plugins: [gradientPlugin],
-            data: {
-                datasets: [{
-                    data: [0, 100],
-                    backgroundColor: ['#0E4C63', '#e9ecef'],
-                    borderWidth: 0,
-                    circumference: 180,
-                    rotation: 270,
-                }]
-            },
-            options: {
-                animation: { duration: 800, easing: 'easeOutCubic' },
-                responsive: true,
-                maintainAspectRatio: true,
-                cutout: '78%',
-                events: [],
-                plugins: { legend: { display: false }, tooltip: { enabled: false } }
-            }
-        });
-
-        chart.data.datasets[0].data = [valor, 100 - valor];
-        chart.update();
-    }
 
     function mostrarMes(idx) {
         const clave = claves[idx];
@@ -448,4 +401,92 @@ function renderOcupacionChart() {
             actualizarTotales(seleccionados);
         });
     });
+}
+
+function renderIngresosCompacto() {
+    const canvas = document.getElementById('grafico-ingresos-dashboard');
+    if (!canvas) return;
+
+    const inst = Chart.getChart(canvas);
+    if (inst) inst.destroy();
+
+    const labels = JSON.parse(canvas.dataset.labels);
+    const ingresos = JSON.parse(canvas.dataset.ingresos);
+    const actualIdx = parseInt(canvas.dataset.actual);
+
+    // Colores: mes actual más oscuro, resto más claro
+    const colores = ingresos.map((_, i) =>
+        i === actualIdx ? 'rgba(14, 76, 99, 1.0)' : 'rgba(14, 76, 99, 0.3)'
+    );
+
+    const gradientPlugin = {
+        id: 'gradientBarsCompacto',
+        afterLayout(chart) {
+            const { ctx, chartArea } = chart;
+            if (!chartArea) return;
+            const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+            gradient.addColorStop(0, 'rgba(14, 76, 99, 0.35)');
+            gradient.addColorStop(1, 'rgba(14, 76, 99, 1.0)');
+            chart.data.datasets[0].backgroundColor = chart.data.datasets[0].backgroundColor;
+        }
+    };
+
+    new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: ingresos,
+                backgroundColor: colores,
+                borderRadius: { topLeft: 3, topRight: 3 },
+                borderSkipped: 'bottom',
+                barPercentage: 0.7,
+                categoryPercentage: 0.75,
+            }]
+        },
+        options: {
+            animation: false,
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function (ctx) {
+                            return ' $' + ctx.raw.toLocaleString('es-CL');
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    border: { display: false },
+                    ticks: { color: '#aaa', font: { size: 9 } }
+                },
+                y: {
+                    position: 'right',
+                    grid: { color: 'rgba(0,0,0,0.04)' },
+                    border: { display: false },
+                    ticks: {
+                        maxTicksLimit: 3,
+                        color: '#aaa',
+                        font: { size: 9 },
+                        callback: function (value) {
+                            if (value >= 1000000) return '$' + (value / 1000000).toFixed(1) + 'M';
+                            if (value >= 1000) return '$' + (value / 1000).toFixed(0) + 'K';
+                            return '$' + value;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderGaugeDashboard() {
+    const canvas = document.getElementById('gauge-ocupacion-dashboard');
+    if (!canvas) return;
+    const valor = parseFloat(canvas.dataset.ocupacion);
+    renderGauge('gauge-ocupacion-dashboard', valor);
 }

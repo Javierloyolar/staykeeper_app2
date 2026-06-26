@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staykeeper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#3D8FAA;
+  --teal-dark:#2B6E85;
+  --teal-bg:#EBF5F9;
+  --white:#FFFFFF;
+  --off:#F4F8FA;
+  --text:#1A2E38;
+  --muted:#5A7A88;
+  --border:#D0E8F0;
+}
+body{
+  font-family:'Nunito Sans',sans-serif;
+  color:var(--text);
+  background:var(--off);
+}
+
+.login-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .login-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .login-grid > div:first-child {
+    height: 60vh;
+    justify-content: flex-start !important;
+    padding-top: 2rem;
+  }
+
+  .login-card {
+    margin-top: -220px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .superhost-badge-box {
+    display: none !important;
+  }
+}
+
+</style>
+</head>
+<body>
+  {% block content %}{% endblock %}
+</body>
+</html>

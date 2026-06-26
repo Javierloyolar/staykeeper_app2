@@ -8,6 +8,8 @@
     <!-- Bootstrap & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- algunos css -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <!-- FullCalendar -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
     
@@ -22,12 +24,10 @@
         .card { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .nav-link-custom { color: rgba(255,255,255,0.8); text-decoration: none; display: block; padding: 10px 0; }
         .nav-link-custom:hover { color: white; }
-        
-        /* Ajuste para móviles: Sidebar arriba */
-        @media (max-width: 768px) {
-            .sidebar { min-height: auto; padding: 10px; }
-            .col-md-2 { width: 100%; }
+        @media (max-width: 767px) {
+            #main-content { padding-top: 60px !important; }
         }
+       
     </style>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
@@ -44,13 +44,82 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <!-- Sidebar -->
-            <div class="col-md-2 sidebar">
-                <h3 class="h4 fw-bold mb-4">Staykeeper</h3>
+             <!-- Barra superior móvil -->
+            <!-- Barra superior móvil -->
+            <div class="d-md-none" style="position:fixed; top:0; left:0; right:0; height:50px; background:#0E4C63; z-index:1050; display:flex; align-items:center; justify-content:space-between; padding:0 16px;">
+                <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'icons/Logo_StayKeeper.svg' %}" alt="Staykeeper" 
+                        style="height:48px; filter: brightness(0) invert(1);">
+                    <span class="fw-bold text-white" style="font-size:1.1rem;">Staykeeper</span>
+                </div>
+                <button class="btn btn-sm border-0 text-white p-1"
+                        onclick="document.getElementById('mobile-menu').classList.toggle('d-none'); document.getElementById('mobile-overlay').classList.toggle('d-none');">
+                    <i class="bi bi-list" style="font-size:1.5rem;"></i>
+                </button>
+            </div>
+
+            <!-- Drawer móvil -->
+            <div id="mobile-menu" class="d-none" 
+                style="position:fixed; top:0; left:0; width:280px; height:100vh; background:#0E4C63; 
+                        color:white; z-index:1060; padding:20px; overflow-y:auto;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <img src="{% static 'icons/Logo_StayKeeper.svg' %}" alt="Staykeeper" 
+                            style="height:48px; filter: brightness(0) invert(1);">
+                        <span class="h5 fw-bold mb-0 text-white">Staykeeper</span>
+                    </div>
+                    <button class="btn btn-sm border-0 text-white" 
+                            onclick="document.getElementById('mobile-menu').classList.add('d-none'); document.getElementById('mobile-overlay').classList.add('d-none');">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <hr class="border-white opacity-25">
+                <nav>
+                    <a href="{% url 'dashboard:index' %}" class="nav-link-custom"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+                    <a hx-get="{% url 'dashboard:estadias' %}" hx-target="#main-content" class="nav-link-custom" style="cursor:pointer;"
+                    onclick="document.getElementById('mobile-menu').classList.add('d-none'); document.getElementById('mobile-overlay').classList.add('d-none');">
+                        <i class="bi bi-house-door me-2"></i> Estadías
+                    </a>
+                    <hr class="border-white opacity-25 my-3">
+                    <div class="mb-2" style="font-size:0.7rem; opacity:0.5; text-transform:uppercase; letter-spacing:0.1em;">Análisis</div>
+                    <a hx-get="{% url 'dashboard:kpi_ingresos' %}" hx-target="#main-content" class="nav-link-custom" style="cursor:pointer;"
+                    onclick="document.getElementById('mobile-menu').classList.add('d-none'); document.getElementById('mobile-overlay').classList.add('d-none');">
+                        <i class="bi bi-cash-stack me-2"></i> Ingresos
+                    </a>
+                    <a hx-get="{% url 'dashboard:kpi_ocupacion' %}" hx-target="#main-content" class="nav-link-custom" style="cursor:pointer;"
+                    onclick="document.getElementById('mobile-menu').classList.add('d-none'); document.getElementById('mobile-overlay').classList.add('d-none');">
+                        <i class="bi bi-calendar-check me-2"></i> Ocupación
+                    </a>
+                    <span class="nav-link-custom d-flex align-items-center justify-content-between" style="opacity:0.4; cursor:default;">
+                        <span><i class="bi bi-graph-up-arrow me-2"></i> Rendimiento</span>
+                        <span style="font-size:0.6rem; background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:4px;">PRONTO</span>
+                    </span>
+                    <hr class="border-white opacity-25 my-3">
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-outline-light w-100 border-0 text-start p-0 nav-link-custom" style="opacity:0.7;">
+                            <i class="bi bi-box-arrow-left me-2"></i> Cerrar Sesión
+                        </button>
+                    </form>
+                </nav>
+            </div>
+
+            <!-- Overlay -->
+            <div id="mobile-overlay" class="d-none"
+                style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1055;"
+                onclick="document.getElementById('mobile-menu').classList.add('d-none'); this.classList.add('d-none');">
+            </div>
+            <!-- Sidebar desktop -->
+            <div class="col-md-2 sidebar d-none d-md-block">
+                <div class="d-flex align-items-center mb-2 gap-2">
+                    <img src="{% static 'icons/Logo_StayKeeper.svg' %}" alt="Staykeeper" 
+                        style="height:56px; filter: brightness(0) invert(1);">
+                    <span class="h5 fw-bold mb-0 text-white">Staykeeper</span>
+                </div>
                 <hr class="border-white opacity-25 mb-3">
                 <nav>
                     <!-- Dashboard -->
-                    <a href="/" class="nav-link-custom">
+                    <a href="{% url 'dashboard:index' %}" class="nav-link-custom">
                         <i class="bi bi-speedometer2 me-2"></i> Dashboard
                     </a>
                     <a class="nav-link-custom"
@@ -99,7 +168,7 @@
             </div>
 
             <!-- Main Content -->
-            <div class="col-md-10 p-3 p-md-4">
+            <div class="col-md-10 p-3 p-md-4" style="padding-top: 50px;">
                 {% block content %}{% endblock %}
             </div>
         </div>
@@ -121,12 +190,17 @@
             renderIngresosChart();
             renderOcupacionChart();
             renderComparativoChart();
+            renderIngresosCompacto();    // ← nuevo
+            renderGaugeDashboard();
         });
         document.body.addEventListener('htmx:afterSettle', function() {
             renderIngresosChart();
             renderOcupacionChart();
             renderComparativoChart();
+            renderIngresosCompacto();    // ← nuevo
+            renderGaugeDashboard();
         });
+        
     </script>
 
 </body>

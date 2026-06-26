@@ -16,19 +16,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.contrib.auth import views as auth_views # Importamos las vistas de auth
-from users.forms import EmailAuthenticationForm # Importamos tu nuevo formulario
-from dashboard.views import DashboardIndexView
+from django.contrib.auth import views as auth_views
+from users.forms import EmailAuthenticationForm
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    # Login personalizado con email
     path('accounts/login/', auth_views.LoginView.as_view(
         authentication_form=EmailAuthenticationForm
     ), name='login'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('', include('dashboard.urls')),   
-    path('dashboard/', DashboardIndexView.as_view(), name='dashboard_index'),
     
-  
+    # Landing pública
+    path('', include('landing.urls')),
+    
+    # Dashboard privado
+    path('dashboard/', include('dashboard.urls')),
+    
+    # API finanzas
     path('api/', include('owner_finances.urls')),
 ]
