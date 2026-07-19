@@ -20,7 +20,7 @@ def obtener_metricas_hub(user, year, month):
         listing__owner=user,
         check_out__gt=inicio_mes,
         check_in__lte=fin_mes
-    ).select_related('listing')
+    ).select_related('listing').prefetch_related('owner_transactions')
 
     ingresos_netos = 0
     noches_ocupadas_mes = 0
@@ -33,7 +33,9 @@ def obtener_metricas_hub(user, year, month):
         if noches_en_mes > 0:
             total_noches_reserva = (b.check_out - b.check_in).days
             pago_diario = b.owner_payout / total_noches_reserva if total_noches_reserva > 0 else 0
-            ingresos_netos += (pago_diario * noches_en_mes)
+            base_mes = round(pago_diario * noches_en_mes)
+            extras = sum(t.owner_share for t in b.owner_transactions.all())
+            ingresos_netos += base_mes + extras
             noches_ocupadas_mes += noches_en_mes
 
     return {
@@ -41,6 +43,7 @@ def obtener_metricas_hub(user, year, month):
         'ocupacion': (noches_ocupadas_mes / num_dias * 100) if num_dias > 0 else 0,
         'media_dia': (ingresos_netos / noches_ocupadas_mes) if noches_ocupadas_mes > 0 else 0,
     }
+
 
 # --- VISTA PRINCIPAL ---
 class DashboardIndexView(LoginRequiredMixin, ListView):
@@ -209,7 +212,7 @@ class DashboardIndexView(LoginRequiredMixin, ListView):
             [{'tipo': 'checkout', 'fecha': b.check_out, 'booking': b, 'dias': (b.check_out - hoy).days} for b in proximos_checkouts] +
             [{'tipo': 'checkin', 'fecha': b.check_in, 'booking': b, 'dias': (b.check_in - hoy).days} for b in proximos_ical_checkin] +
             [{'tipo': 'checkout', 'fecha': b.check_out, 'booking': b, 'dias': (b.check_out - hoy).days} for b in proximos_ical_checkout],
-            key=lambda x: x['fecha']
+            key=lambda x: (x['fecha'], 0 if x['tipo'] == 'checkout' else 1)
         )[:4]
 
         # --- Ventana móvil de ingresos ---
@@ -472,6 +475,7 @@ class EstadiaView(LoginRequiredMixin, ListView):
                 b.pago_prorrateado = int(pago_diario * b.noches_en_mes)
                 txs = b.owner_transactions.all()
                 b.extras_total = sum(t.owner_share for t in txs) if txs.exists() else None
+                b.extras_detalle = list(txs)
                 b.total_fila = b.pago_prorrateado + (b.extras_total or 0)
                 try:
                     b.estado_pago = b.payout.status
@@ -482,7 +486,7 @@ class EstadiaView(LoginRequiredMixin, ListView):
         else:
             fuente_datos = IcalBlock.objects.filter(
                 listing__owner=self.request.user,
-                check_out__gt=date(year, month, 1),
+                check_out__gt=hoy,
                 check_in__lte=date(year, month, num_dias)
             )
 
@@ -519,7 +523,10 @@ class EstadiaView(LoginRequiredMixin, ListView):
                 'es_pasado': (fecha_iter < hoy and modo == 'programadas'),                
             })
 
-        stats = obtener_metricas_hub(self.request.user, year, month)
+        if modo == 'realizadas':
+            kpi_ingresos = sum(b.total_fila for b in fuente_datos)
+        else:
+            kpi_ingresos = 0
 
         context.update({
             'month': month,
@@ -534,6 +541,6 @@ class EstadiaView(LoginRequiredMixin, ListView):
             'modo': modo,
             'bloquear_atras': bloquear_atras,
             'bloquear_adelante': bloquear_adelante,
-            'kpi_ingresos': stats['ingresos'],
+            'kpi_ingresos': kpi_ingresos,
         })
         return context

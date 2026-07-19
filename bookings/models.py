@@ -25,7 +25,7 @@ class Booking(models.Model):
         rate = self.listing.commission_rate
         
         # 3. Calcular montos (convertimos a int para eliminar decimales de la operación)
-        self.staykeeper_revenue = int(commissionable_base * rate)
-        self.owner_payout = int(commissionable_base * (1 - rate))
+        self.staykeeper_revenue = round(commissionable_base * rate)
+        self.owner_payout = round(commissionable_base * (1 - rate))
         
         super().save(*args, **kwargs)

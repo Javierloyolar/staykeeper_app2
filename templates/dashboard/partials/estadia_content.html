@@ -89,7 +89,10 @@
                                 {% else %}status-reserva-medio{% endif %}
                             {% else %}
                                 {% if d.registro.is_reservation %}
-                                    {% if d.es_dia_unico %}status-reserva
+                                    {% if d.es_hoy and not d.es_inicio_reserva %}
+                                        {% if d.es_fin_reserva %}status-reserva
+                                        {% else %}status-reserva-inicio{% endif %}
+                                    {% elif d.es_dia_unico %}status-reserva
                                     {% elif d.es_inicio_reserva %}status-reserva-inicio
                                     {% elif d.es_fin_reserva %}status-reserva-fin
                                     {% else %}status-reserva-medio{% endif %}
@@ -167,11 +170,18 @@
 
                         <td class="text-end d-none d-md-table-cell">
                             {% if b.extras_total is not None %}
-                                {% if b.extras_total >= 0 %}
-                                    <span class="text-success" style="font-size:0.8rem;">+${{ b.extras_total|clp }}</span>
-                                {% else %}
-                                    <span class="text-danger" style="font-size:0.8rem;">-${{ b.extras_total|clp|cut:"-" }}</span>
-                                {% endif %}
+                                <span data-bs-toggle="popover"
+                                    data-bs-trigger="click"
+                                    data-bs-placement="left"
+                                    data-bs-html="true"
+                                    data-bs-content="{% for t in b.extras_detalle %}<div>{{ t.get_category_display }}: ${{ t.owner_share }}</div>{% endfor %}"
+                                    style="cursor:pointer;">
+                                    {% if b.extras_total >= 0 %}
+                                        <span class="text-success" style="font-size:0.8rem;">+${{ b.extras_total|clp }}</span>
+                                    {% else %}
+                                        <span class="text-danger" style="font-size:0.8rem;">-${{ b.extras_total|clp|cut:"-" }}</span>
+                                    {% endif %}
+                                </span>
                             {% else %}
                                 <span class="text-muted">—</span>
                             {% endif %}

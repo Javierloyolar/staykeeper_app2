@@ -5,7 +5,11 @@ class Property(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     airbnb_ical_url = models.URLField(max_length=500, blank=True)
-    commission_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.15)
+    commission_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.2)
+    airbnb_listing_name = models.CharField(
+        max_length=255, blank=True, null=True,
+        help_text="Nombre exacto del anuncio como aparece en el CSV de Airbnb (columna 'Anuncio')"
+    )
     
     def __str__(self):
         return self.name

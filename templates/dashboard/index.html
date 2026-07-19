@@ -105,8 +105,19 @@
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-    /* Estado: HOY (Borde sutil con tu color corporativo) */
-    .es-hoy { box-shadow: inset 0 0 0 1px #0E4C63; }
+    /* Estado: HOY (Circulo sutil con color corporativo) */
+    .es-hoy .day-number,
+    .es-hoy .day-number-dashboard {
+        background: #0E4C63;
+        color: white !important;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 4px auto;
+    }
 
      /* Estado: BLOQUEADO (Línea diagonal sólida de arriba-derecha a abajo-izquierda) */
     .status-bloqueado {

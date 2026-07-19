@@ -1,0 +1,278 @@
+/* ===========================
+   STAYKEEPER — LOGIN STYLES
+   =========================== */
+
+/* Variables */
+:root {
+    --teal: #3D8FAA;
+    --teal-dark: #2B6E85;
+    --teal-bg: #EBF5F9;
+    --white: #FFFFFF;
+    --off: #F4F8FA;
+    --text: #1A2E38;
+    --muted: #5A7A88;
+    --border: #D0E8F0;
+}
+
+/* Reset */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Nunito Sans', sans-serif;
+    color: var(--text);
+    background: var(--off);
+}
+
+/* ===========================
+   LAYOUT PRINCIPAL
+   =========================== */
+
+.login-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+}
+
+/* ===========================
+   PANEL IZQUIERDO (hero)
+   =========================== */
+
+.login-hero {
+    position: relative;
+    background-image: url('../images/login_bg.webp');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem;
+}
+
+.login-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(26, 46, 56, 0.3) 0%, rgba(26, 46, 56, 0.75) 100%);
+}
+
+.login-hero__content {
+    position: relative;
+    z-index: 1;
+}
+
+.login-hero__brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 3rem;
+}
+
+.login-hero__logo {
+    height: 40px;
+    filter: brightness(0) invert(1);
+}
+
+.login-hero__brand-name {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+    font-weight: 800;
+    color: white;
+}
+
+.login-hero__title {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 900;
+    color: white;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+}
+
+.login-hero__subtitle {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: clamp(0.85rem, 2vw, 0.95rem);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+}
+
+.login-hero__badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 0.85rem 1.2rem;
+    width: fit-content;
+}
+
+.login-hero__badge-title {
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.login-hero__badge-stars {
+    color: #F5A623;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+}
+
+/* ===========================
+   PANEL DERECHO (formulario)
+   =========================== */
+
+.login-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--off);
+    padding: 3rem;
+}
+
+.login-card {
+    width: min(100%, 380px);
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 30px rgba(61, 143, 170, 0.08);
+}
+
+.login-card__title {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(1.3rem, 3vw, 1.6rem);
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+}
+
+.login-card__subtitle {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+}
+
+/* Formulario */
+.login-form__label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
+.login-form__input {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    font-family: 'Nunito Sans', sans-serif;
+    color: var(--text);
+    background: white;
+    outline: none;
+    margin-bottom: 1.2rem;
+    transition: border-color 0.2s;
+}
+
+.login-form__input:focus {
+    border-color: var(--teal);
+}
+
+.login-form__forgot {
+    display: block;
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--teal);
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.login-form__error {
+    font-size: 0.82rem;
+    color: #E05D52;
+    margin-bottom: 1rem;
+    background: #FEF2F2;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    border: 1px solid #FCA5A5;
+}
+
+.login-form__submit {
+    width: 100%;
+    background: var(--teal);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0.9rem;
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(0.9rem, 3vw, 1rem);
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow: 0 4px 12px rgba(61, 143, 170, 0.3);
+}
+
+.login-form__submit:hover {
+    background: var(--teal-dark);
+}
+
+.login-card__back {
+    display: block;
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-decoration: none;
+}
+
+/* ===========================
+   RESPONSIVE — MÓVIL
+   =========================== */
+
+@media (max-width: 768px) {
+    .login-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+    }
+
+    .login-hero {
+        min-height: 35vh;
+        padding: 1.5rem;
+        justify-content: flex-start;
+    }
+
+    .login-hero__brand {
+        margin-bottom: 1.5rem;
+    }
+
+    .login-hero__badge {
+        display: none;
+    }
+
+    .login-hero__subtitle {
+        display: none;
+    }
+
+    .login-panel {
+        padding: 1.5rem;
+        align-items: flex-start;
+    }
+
+    .login-card {
+        padding: 1.75rem 1.5rem;
+        margin-top: -40px;
+        position: relative;
+        z-index: 2;
+    }
+}

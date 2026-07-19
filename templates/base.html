@@ -192,6 +192,7 @@
             renderComparativoChart();
             renderIngresosCompacto();    // ← nuevo
             renderGaugeDashboard();
+            
         });
         document.body.addEventListener('htmx:afterSettle', function() {
             renderIngresosChart();
@@ -199,6 +200,18 @@
             renderComparativoChart();
             renderIngresosCompacto();    // ← nuevo
             renderGaugeDashboard();
+            document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
+                new bootstrap.Popover(el, {
+                    trigger: 'click',
+                });
+            });
+
+            document.addEventListener('click', function(e) {
+                document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
+                    const pop = bootstrap.Popover.getInstance(el);
+                    if (pop && !el.contains(e.target)) pop.hide();
+                });
+            });
         });
         
     </script>
