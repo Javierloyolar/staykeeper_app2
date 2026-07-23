@@ -1,0 +1,11 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools-items %}
+    <li>
+        <form method="post" action="{% url 'admin:ical_sync_sincronizar' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="button default">Sincronizar ahora</button>
+        </form>
+    </li>
+    {{ block.super }}
+{% endblock %}

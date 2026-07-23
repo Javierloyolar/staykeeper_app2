@@ -19,12 +19,10 @@
     <span class="logo-text"><span>Staykeeper</span></span>
   </a>
   <div class="nav-links">
-    <a href="#que-hacemos">Qué hacemos</a>
     <a href="#por-que-staykeeper">Por qué nosotros</a>
     <a href="#resultados">Resultados</a>
     <a href="#como-funciona">Cómo funciona</a>
-    <a href="#planes">Planes</a>
-    <a href="#comision">Comisión</a>
+    <a href="#planes">Planes y Servicios</a>
     <a href="{% url 'login' %}" class="nav-cta">Mi panel</a>
   </div>
 </nav>
@@ -252,7 +250,7 @@
 </section>
 
 <!-- TESTIMONIOS -->
-<section>
+<section class="testimonios-section">
   <div class="reveal text-center">
     <div class="section-tag">Testimonios reales</div>
     <h2 class="section-h2">Lo que dicen nuestros <span>huéspedes</span></h2>
@@ -277,53 +275,49 @@
   </div>
 </section>
 
-<!-- PLANES -->
+<!-- PLANES Y SERVICIOS -->
 <section class="planes-section" id="planes">
   <div class="reveal text-center">
-    <div class="section-tag">Planes</div>
-    <h2 class="section-h2">Elige <span>cómo</span> quieres operar</h2>
-    <p class="section-sub mx-auto">Mismo servicio de administración 24/7 y la misma comisión en los dos casos — la diferencia es de quién es la cuenta de Airbnb.</p>
+    <div class="section-tag">Planes y Servicios</div>
+    <h2 class="section-h2">Elige <span>cómo</span> quiere trabajar con nosotros</h2>
+    <p class="section-sub mx-auto">Desde la administración completa de su propiedad hasta el impulso inicial para partir solo — usted decide.</p>
   </div>
   <div class="planes-grid reveal delay-1">
     <div class="plan-card">
-      <div class="plan-badge">Copropietario</div>
-      <h3 class="plan-title">Plan Copropietario</h3>
-      <p class="plan-desc">La cuenta de Airbnb sigue a su nombre. Staykeeper administra todo como co-anfitrión.</p>
+      <div class="plan-badge">Gestión total</div>
+      <h3 class="plan-title">Plan Gestión Total</h3>
+      <p class="plan-desc">Nos encargamos de todo. Usted solo recibe su dinero.</p>
+      <div class="plan-price">20<span class="plan-price__small">%</span><span class="plan-price__unit">de comisión sobre los ingresos generados por sus reservas</span></div>
       <ul class="plan-list">
-        <li>Mantiene su historial, reseñas y estatus de Superhost</li>
-        <li>Usted queda como titular; nosotros operamos el día a día</li>
-        <li>Ideal si ya tiene una cuenta activa en Airbnb</li>
+        <li>Creación y optimización del anuncio</li>
+        <li>Revenue Management</li>
+        <li>Atención 24/7</li>
+        <li>Coordinación de aseo</li>
+        <li>Check-in / check-out</li>
+        <li>Reportes mensuales</li>
+        <li>Soporte</li>
+        <li>Mantenciones</li>
+        <li>Guía digital para el huésped</li>
+        <li>Acceso a plataforma Staykeeper</li>
       </ul>
     </div>
     <div class="plan-card">
-      <div class="plan-badge">Gestión total</div>
-      <h3 class="plan-title">Plan Gestión Total</h3>
-      <p class="plan-desc">Publicamos y operamos bajo la cuenta de Staykeeper. Usted recibe su dinero cada mes.</p>
+      <div class="plan-badge">Primer paso</div>
+      <h3 class="plan-title">Servicio Primer Paso</h3>
+      <p class="plan-desc">Damos el primer paso como anfitrión por ti.</p>
+      <div class="plan-price"><span class="plan-price__small">Desde</span> $180.000<span class="plan-price__unit">pago único</span></div>
       <ul class="plan-list">
-        <li>Cero gestión de su parte, incluso de la cuenta</li>
-        <li>Transferencia mensual con liquidación detallada</li>
-        <li>Ideal si busca la opción más simple y directa</li>
+        <li>Creación del anuncio en Airbnb</li>
+        <li>Optimización SEO</li>
+        <li>Configuración del anuncio</li>
+        <li>Fijación de precios iniciales</li>
+        <li>Configuración de reglas</li>
+        <li>Edición de fotografías</li>
+        <li>Automatizaciones básicas</li>
+        <li>Capacitación en el uso de la plataforma (2 horas)</li>
+        <li>Acompañamiento y soporte durante su primera reserva</li>
       </ul>
     </div>
-  </div>
-  <p class="plan-note reveal delay-1">Ambos planes tienen la misma comisión — la diferencia es solo de qué cuenta se publica su propiedad.</p>
-</section>
-
-<!-- COMISION -->
-<section class="comision-section" id="comision">
-  <div class="comision-inner reveal">
-    <div class="results-tag mb-1">Sin letra chica</div>
-    <div class="big-num"><sup>solo el </sup>20<sup>%</sup></div>
-    <p class="comision-label">Comisión fija sobre ingresos generados por reservas</p>
-    <div class="comision-puntos">
-      <div class="comision-punto"><strong>Limpieza: $0 para usted</strong><p>La paga el huésped. No es un gasto ni ingreso para nosotros.</p></div>
-      <div class="comision-punto"><strong>Sin cobros ocultos</strong><p>Solo descontamos gastos indispensables cuando es estrictamente necesario, siempre con respaldo.</p></div>
-      <div class="comision-punto"><strong>Reporte transparente</strong><p>Cada mes recibe detalle de ingresos, egresos y su liquidación final. Nada se esconde.</p></div>
-    </div>
-    <a href="https://wa.me/56961177799" target="_blank" rel="noopener" class="wa-btn mx-auto">
-      <svg class="wa-icon" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      Hablar con nosotros — +56 9 6117 7799
-    </a>
   </div>
 </section>
 
@@ -348,13 +342,17 @@
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo-text"><strong>Stay</strong><span>keeper</span></div>
+  <div class="footer-logo-text"><strong>Staykeeper</strong></div>
   <div class="footer-links">
     <a href="https://wa.me/56961177799" target="_blank" rel="noopener">+56 9 6117 7799</a>
     <a href="https://instagram.com/staykeeper" target="_blank" rel="noopener">@staykeeper</a>
   </div>
   <div class="footer-copy">© 2025 Staykeeper · Gestión profesional de arriendos temporales</div>
 </footer>
+
+<a href="https://wa.me/56961177799" target="_blank" rel="noopener" class="wa-float" aria-label="Hablar por WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
 
 <script>
 const revs=document.querySelectorAll('.reveal');
@@ -423,8 +421,40 @@ function drawPorqueOutline(activeBtn) {
 
 drawPorqueOutline(document.querySelector('.porque-item.is-active'));
 
+const porqueMobileQuery = window.matchMedia('(max-width: 900px)');
+
+if (porqueMobileQuery.matches) {
+  porqueItems.forEach(i => i.classList.remove('is-active'));
+}
+
+function closePorqueAccordion() {
+  porqueContent.classList.remove('is-open');
+}
+
+function openPorqueAccordion(item) {
+  item.insertAdjacentElement('afterend', porqueContent);
+  requestAnimationFrame(() => {
+    porqueContent.classList.add('is-open');
+  });
+}
+
 porqueItems.forEach(item => {
   item.addEventListener('click', () => {
+    if (porqueMobileQuery.matches) {
+      const wasActive = item.classList.contains('is-active');
+      porqueItems.forEach(i => i.classList.remove('is-active'));
+      closePorqueAccordion();
+
+      if (wasActive) return;
+
+      item.classList.add('is-active');
+      porqueText.textContent = item.dataset.desc;
+      porqueImg.src = item.dataset.img;
+      porqueImg.alt = item.dataset.alt;
+      openPorqueAccordion(item);
+      return;
+    }
+
     if (item.classList.contains('is-active')) return;
     porqueItems.forEach(i => i.classList.remove('is-active'));
     item.classList.add('is-active');

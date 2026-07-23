@@ -13,7 +13,7 @@
             </div>
         </div>
         <button class="btn btn-staykeeper btn-sm px-3"
-                hx-get="/?modo=realizadas"
+                hx-get="{% url 'dashboard:index' %}"
                 hx-target="#main-content">
             <i class="bi bi-arrow-left me-1"></i> Volver
         </button>

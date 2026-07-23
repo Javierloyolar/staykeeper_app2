@@ -1,0 +1,35 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="accion" value="subir_csv">
+    {{ form.as_p }}
+    <input type="submit" value="Importar" class="button default">
+</form>
+
+{% if resultado %}
+    <h2>Resultado</h2>
+    <pre style="background:#f7f7f7; color:#222; padding:1em; max-height:500px; overflow:auto; white-space:pre-wrap;">{{ resultado }}</pre>
+{% endif %}
+
+{% if pendientes %}
+    <h2>⛔ Pendientes de revisión ({{ pendientes|length }})</h2>
+    {% for p in pendientes %}
+        <form method="post" style="border:1px solid #c00; padding:1em; margin-bottom:0.5em;">
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="resolver_pendiente">
+            <input type="hidden" name="pendiente_id" value="{{ p.id }}">
+            <strong>{{ p.get_reason_display }}</strong> —
+            {{ p.listing.name }} — {{ p.guest_name }} —
+            {{ p.check_in }} → {{ p.check_out }} — ${{ p.net_revenue }}
+            (limpieza: ${{ p.cleaning_fee }}, código: {{ p.reservation_code }})
+            <br>
+            <button type="submit" name="decision" value="activa" class="button default">Es una reserva real</button>
+            <button type="submit" name="decision" value="cancelada" class="button">Fue cancelada</button>
+        </form>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}

@@ -2,7 +2,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="fw-bold text-dark mb-0">Ocupación</h5>
         <button class="btn btn-staykeeper btn-sm px-3"
-                hx-get="/?modo=realizadas"
+                hx-get="{% url 'dashboard:index' %}"
                 hx-target="#main-content">
             <i class="bi bi-arrow-left me-1"></i> Volver
         </button>
